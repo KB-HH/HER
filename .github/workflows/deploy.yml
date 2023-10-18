@@ -40,7 +40,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: backend-build
-          path: backend/target/recipe.jar
+          path: backend/target/her.jar
 
   push-to-docker-hub:
     runs-on: ubuntu-latest
