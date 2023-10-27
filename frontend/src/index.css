@@ -1,11 +1,55 @@
 .div_Gallery{
   display: flex;
   flex-direction: row;
-  align-items: center;
+  background-image: url("public/cdc-lRud5FDezto-unsplash.jpg");
+  background-color: aliceblue ;
+  box-shadow: 6px 4px 8px;
+  border-radius: 12px;
+  justify-content: flex-end;
+  border: solid 1px grey;
+  margin: 20px;
+  padding: 10px;
+
 }
 .recipe-card{
-  margin: 10px;
-  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  margin: 5px;
+  padding: 5px;
   border: solid 5px grey;
-  border-radius: 10px;
+  border-radius: 5px;
 }
+.div_Header{
+  font-family: "fantasy", serif;
+  font-size: x-large;
+}
+.div_List{
+    display: flex;
+    flex-direction: row;
+    font-family: Menlo, serif;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 5px;
+    padding: 5px;
+  }
+.div_description {
+    display: flow;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  @media screen and (min-width: 40em) {
+    .list {
+      width:30%;
+      height: 120px;
+      margin: 20px;
+      padding: 5px;
+      border: solid 1px grey;
+      border-radius: 1px;
+    }
+  }
+
+  @media screen and (min-width: 75em) {
+    .list {
+      width:33%;
+    }
+  }
