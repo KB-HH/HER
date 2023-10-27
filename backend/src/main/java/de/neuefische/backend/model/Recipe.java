@@ -1,16 +1,32 @@
 package de.neuefische.backend.model;
 
-public record Recipe(
+
+import java.util.List;
+
+public record Recipe (
         String id,
-        int cookingtime,
+        String cookingtime,
         String title,
-        String ingredients,
-        String unit,
-        double quantity,
-        String method,
+        List<Ingredients> ingredients,
+        List<Method> method,
         String description,
         String author,
         String url,
-        String categories
-) {
+        List<Categories> categories
+)
+
+{
+
+    public List<Ingredients> getIngredients() {
+        return ingredients();
+    }
+
+    public List<Method> getMethod() {
+        return method();
+    }
+
+    public List<Categories> getCategories() {
+        return categories();
+    }
+
 }
