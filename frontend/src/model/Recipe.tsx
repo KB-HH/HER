@@ -7,7 +7,7 @@ export type Recipe = {
     description: string,
     author: string,
     url: string,
-    categories: string
+    categories: Categories[];
 }
 export type Ingredients = {
     id: string;
@@ -20,5 +20,10 @@ export type Method = {
     id: number;
     method: string;
 };
+export type Categories = {
+    id: number;
+    categories: string;
+};
+
 
 
