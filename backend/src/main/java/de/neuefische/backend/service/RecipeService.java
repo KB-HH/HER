@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+
 @Service
 public class RecipeService {
 
@@ -23,25 +24,20 @@ public class RecipeService {
     }
 
     public Recipe updateRecipe(String id, Recipe recipe) {
-        Recipe existingRecipe = recipeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Recipe not found"));
 
         Recipe updatedRecipe = new Recipe(
-                existingRecipe.id(),
+                id,
                 recipe.cookingtime(),
                 recipe.title(),
-                recipe.getIngredients(),
-                recipe.getMethod(),
+                recipe.ingredients(),
+                recipe.method(),
                 recipe.description(),
                 recipe.author(),
                 recipe.url(),
-                recipe.getCategories()
+                recipe.categories()
         );
 
         return recipeRepository.save(updatedRecipe);
     }
-
-
-
 
 }

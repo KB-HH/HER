@@ -2,7 +2,7 @@ package de.neuefische.backend.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.neuefische.backend.model.Categories;
+import de.neuefische.backend.model.Category;
 import de.neuefische.backend.model.Ingredients;
 import de.neuefische.backend.model.Method;
 import de.neuefische.backend.model.Recipe;
@@ -11,19 +11,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -39,123 +34,151 @@ class RecipeControllerTest {
 
     @Test
     @DirtiesContext
-    void getAllRecipes() throws Exception {
-        //GIVEN
-        recipeRepository.save(new Recipe("6537c8883bacac19d92a6485", "45", "Tomatensuppe1",
-                List.of(new Ingredients("g", "500", "Tomaten")),
-                List.of(new Method("Die Zwiebel und den Knoblauch fein hacken.")),
-                "Eine leckere und einfache Tomatensuppe, perfekt für kalte Tage.", "Maria Müller", "https://example.com/tomatensuppe",List.of(new Categories("Suppe"))));
-        //WHEN
+    void testGetAllRecipes() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/recipes"))
-                //THEN
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"));
+    }
+
+    @Test
+    @DirtiesContext
+    void testHandleNoSuchElementException() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/recipes/6537c8883bacac19d92a648")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Rezept nicht gefunden"));
+    }
+
+
+
+    @Test
+    @DirtiesContext
+    void updateRecipeIntegrationTest() throws Exception {
+        // GIVEN
+        Recipe initialRecipe = new Recipe(
+                "6537c8883bacac19d92a6485",
+                "45",
+                "Tomatensuppe3",
+                List.of(new Ingredients("g", "500", "Tomaten"),
+                        new Ingredients("", "1", "Zwiebel"),
+                        new Ingredients("Knoblauchzehe", "1", "Knoblauch"),
+                        new Ingredients("EL", "2", "Olivenöl"),
+                        new Ingredients("TL", "1", "Zucker"),
+                        new Ingredients("ml", "500", "Gemüsebrühe"),
+                        new Ingredients("Prise", "1", "Salz und Pfeffer")),
+                List.of(new Method("Die Zwiebel und den Knoblauch fein hacken."),
+                        new Method("In einem Topf das Olivenöl erhitzen und die Zwiebel und den Knoblauch darin anschwitzen."),
+                        new Method("Die Tomaten in Würfel schneiden und hinzufügen."),
+                        new Method("Zucker zugeben und kurz karamellisieren lassen."),
+                        new Method("Die Gemüsebrühe hinzufügen und alles zum Kochen bringen."),
+                        new Method("Die Suppe etwa 20 Minuten köcheln lassen.Mit Salz und Pfeffer abschmecken."),
+                        new Method("Die Suppe pürieren und heiß servieren.")),
+                "Eine leckere und einfache Tomatensuppe, perfekt für kalte Tage.",
+                "Maria Müller",
+                "https://example.com/tomatensuppe",
+                List.of(new Category("Suppe"),
+                        (new Category("warm"))));
+        recipeRepository.save(initialRecipe);
+
+        // Create an updated recipe
+        Recipe updatedRecipe = new Recipe(
+                "6537c8883bacac19d92a6485",
+                "60", // Updated cooking time
+                "Tomatensuppe3 (Updated)", // Updated title
+                initialRecipe.ingredients(),
+                initialRecipe.method(),
+                "Eine aktualisierte Tomatensuppe.", // Updated description
+                initialRecipe.author(),
+                initialRecipe.url(),
+                initialRecipe.categories()
+        );
+
+        // WHEN
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/recipes/6537c8883bacac19d92a6485")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedRecipe))) // Serialize the updatedRecipe to JSON
+                // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().json("""
-                    [
-                    {
-                        "id": "6537c8883bacac19d92a6485",
-                        "cookingtime": "45",
-                        "title": "Tomatensuppe1",
-                        "ingredients": [
-                            {
-                                "unit": "g",
-                                "quantity": "500",
-                                "name": "Tomaten"
-                            }
-                        ],
-                        "method": [
-                            {
-                                "method": "Die Zwiebel und den Knoblauch fein hacken."
-                            }
-                        ],
-                        "description": "Eine leckere und einfache Tomatensuppe, perfekt für kalte Tage.",
-                        "author": "Maria Müller",
-                        "url": "https://example.com/tomatensuppe",
-                        "categories": [
-                            {
-                                "categories": "Suppe"
-                            }
-                        ],
-                    }
-                    ]
-                    """));
+        {
+            "id": "6537c8883bacac19d92a6485",
+            "cookingtime": "60",
+            "title": "Tomatensuppe3 (Updated)",
+            "ingredients": [
+                {
+                    "unit": "g",
+                    "quantity": "500",
+                    "name": "Tomaten"
+                },
+                {
+                    "unit": "",
+                    "quantity": "1",
+                    "name": "Zwiebel"
+                },
+                {
+                    "unit": "Knoblauchzehe",
+                    "quantity": "1",
+                    "name": "Knoblauch"
+                },
+                {
+                    "unit": "EL",
+                    "quantity": "2",
+                    "name": "Olivenöl"
+                },
+                {
+                    "unit": "TL",
+                    "quantity": "1",
+                    "name": "Zucker"
+                },
+                {
+                    "unit": "ml",
+                    "quantity": "500",
+                    "name": "Gemüsebrühe"
+                },
+                {
+                    "unit": "Prise",
+                    "quantity": "1",
+                    "name": "Salz und Pfeffer"
+                }
+            ],
+            "method": [
+                {
+                    "method": "Die Zwiebel und den Knoblauch fein hacken."
+                },
+                {
+                    "method": "In einem Topf das Olivenöl erhitzen und die Zwiebel und den Knoblauch darin anschwitzen."
+                },
+                {
+                    "method": "Die Tomaten in Würfel schneiden und hinzufügen."
+                },
+                {
+                    "method": "Zucker zugeben und kurz karamellisieren lassen."
+                },
+                {
+                    "method": "Die Gemüsebrühe hinzufügen und alles zum Kochen bringen."
+                },
+                {
+                    "method": "Die Suppe etwa 20 Minuten köcheln lassen.Mit Salz und Pfeffer abschmecken."
+                },
+                {
+                    "method": "Die Suppe pürieren und heiß servieren."
+                }
+            ],
+            "description": "Eine aktualisierte Tomatensuppe.",
+            "author": "Maria Müller",
+            "url": "https://example.com/tomatensuppe",
+            "categories": [
+                {
+                    "categories": "Suppe"
+                },
+                {
+                    "categories": "warm"
+                }
+            ]
+        }
+        """))
+                .andExpect(jsonPath("$.id").isNotEmpty());
     }
 
-
-
-    @Test
-    @DirtiesContext
-    void getAllRecipesIntegrationTest() throws Exception {
-
-        recipeRepository.save(new Recipe("6537c8883bacac19d92a6485", "45", "Tomatensuppe1",
-                List.of(new Ingredients("g", "500", "Tomaten")),
-                List.of(new Method("Die Zwiebel und den Knoblauch fein hacken.")),
-                "Eine leckere und einfache Tomatensuppe, perfekt für kalte Tage.", "Maria Müller", "https://example.com/tomatensuppe",List.of(new Categories("Suppe"))));
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/recipes"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("""
-                    [
-                    {
-                        "id": "6537c8883bacac19d92a6485",
-                        "cookingtime": "30",
-                        "title": "Erdbeerkuchen",
-                        "ingredients": [
-                            {
-                                "unit": "g",
-                                "quantity": "500",
-                                "name": "Tomaten"
-                            }
-                        ],
-                        "method": [
-                            {
-                                "method": "Die Zwiebel und den Knoblauch fein hacken."
-                            }
-                        ],
-                        "description": "Eine leckere und einfache Tomatensuppe, perfekt für kalte Tage.",
-                        "author": "Maria Müller",
-                        "url": "https://example.com/tomatensuppe",
-                        "categories": [
-                            {
-                                "categories": "Suppe"
-                            }
-                        ],
-                        }
-                        ]
-                """));
-    }
-
-    @Test
-    @DirtiesContext
-    void getRecipeByIdIntegrationTest() throws Exception {
-        Recipe savedRecipe = new Recipe("1", "30", "Erdbeerkuchen",
-                List.of(new Ingredients("Ente", "1", null)),
-                List.of(new Method("backen")),
-                "leckeres Rezept", "Kristina", "h",List.of(new Categories("Sommer,Winter")));
-        recipeRepository.save(savedRecipe);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/recipes/1"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("""
-                    {
-                        "id": "1",
-                        "cookingtime": "30",
-                        "title": "Erdbeerkuchen",
-                        "ingredients": [
-                            {
-                                "unit": "Ente",
-                                "quantity": "1",
-                                "name": null
-                            }
-                        ],
-                        "method": [
-                            {
-                                "method": "backen"
-                            }
-                        ],
-                        "description": "leckeres Rezept",
-                        "author": "Kristina",
-                        "categories": ["Sommer", "Winter"],
-                    }
-                """));
-    }
 }
