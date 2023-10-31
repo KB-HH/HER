@@ -12,21 +12,8 @@ public record Recipe (
         String description,
         String author,
         String url,
-        List<Categories> categories
+        List<Category> categories
 )
 
 {
-
-    public List<Ingredients> getIngredients() {
-        return ingredients();
-    }
-
-    public List<Method> getMethod() {
-        return method();
-    }
-
-    public List<Categories> getCategories() {
-        return categories();
-    }
-
 }

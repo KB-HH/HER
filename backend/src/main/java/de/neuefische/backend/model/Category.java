@@ -1,6 +1,6 @@
 package de.neuefische.backend.model;
 
-public record Categories(
+public record Category(
         String categories
 ) {
 }
