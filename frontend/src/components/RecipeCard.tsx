@@ -15,14 +15,18 @@ export default function RecipeCard(props: RecipeCardProps) {
         props.setRecipe(recipe)
     }
     return (
-        <div className="list">
+
+        <div className="recipe-gallery">
             <Link to={`/api/recipes/${props.recipe.id}`} onClick={() => props.recipe && onHandleEdit(props.recipe)}>
-                <h5>{props.recipe.title}</h5>
+                <div className="recipe-title">
+                <h2>{props.recipe.title}</h2>
+                    </div>
+                <div className="recipe-card">
                 <img
                     src={props.recipe.url}
                     alt={props.recipe.url}/>
-                <h5>{props.recipe.description}</h5>
-                <p>{props.recipe.cookingtime}</p>
+                <h3>{props.recipe.description}</h3>
+                </div>
             </Link>
             </div>
     )

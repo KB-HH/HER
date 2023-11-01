@@ -2,10 +2,7 @@ package de.neuefische.backend.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.neuefische.backend.model.Category;
-import de.neuefische.backend.model.Ingredients;
-import de.neuefische.backend.model.Method;
-import de.neuefische.backend.model.Recipe;
+import de.neuefische.backend.model.*;
 import de.neuefische.backend.repository.RecipeRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +15,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -81,14 +80,13 @@ class RecipeControllerTest {
                         (new Category("warm"))));
         recipeRepository.save(initialRecipe);
 
-        // Create an updated recipe
         Recipe updatedRecipe = new Recipe(
                 "6537c8883bacac19d92a6485",
-                "60", // Updated cooking time
-                "Tomatensuppe3 (Updated)", // Updated title
+                "60",
+                "Tomatensuppe3 (Updated)",
                 initialRecipe.ingredients(),
                 initialRecipe.method(),
-                "Eine aktualisierte Tomatensuppe.", // Updated description
+                "Eine aktualisierte Tomatensuppe.",
                 initialRecipe.author(),
                 initialRecipe.url(),
                 initialRecipe.categories()
@@ -180,5 +178,70 @@ class RecipeControllerTest {
         """))
                 .andExpect(jsonPath("$.id").isNotEmpty());
     }
+    @Test
+    void addNewRecipe() throws Exception{
+        //WHEN
+        mockMvc.perform(post("/api/recipes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                     {
+                        "title": "Mein Test",
+                        "description": "..."
+                     }
+                    """))
+                //THEN
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                     {
+
+                        "title": "Mein Test",
+                        "description": "..."
+                     }
+                    """))
+                .andExpect(jsonPath("$.id").isNotEmpty());
+
+
+    }
+    @Test
+    void testPostRecipeWithInvalidData() throws Exception {
+        //GIVEN
+        recipeRepository.save(new Recipe("1",
+                "45",
+                "",
+                List.of(new Ingredients("g", "500", "Tomaten"),
+                        new Ingredients("", "1", "Zwiebel"),
+                        new Ingredients("Knoblauchzehe", "1", "Knoblauch"),
+                        new Ingredients("EL", "2", "Olivenöl"),
+                        new Ingredients("TL", "1", "Zucker"),
+                        new Ingredients("ml", "500", "Gemüsebrühe"),
+                        new Ingredients("Prise", "1", "Salz und Pfeffer")),
+                List.of(new Method("Die Zwiebel und den Knoblauch fein hacken."),
+                        new Method("In einem Topf das Olivenöl erhitzen und die Zwiebel und den Knoblauch darin anschwitzen."),
+                        new Method("Die Tomaten in Würfel schneiden und hinzufügen."),
+                        new Method("Zucker zugeben und kurz karamellisieren lassen."),
+                        new Method("Die Gemüsebrühe hinzufügen und alles zum Kochen bringen."),
+                        new Method("Die Suppe etwa 20 Minuten köcheln lassen.Mit Salz und Pfeffer abschmecken."),
+                        new Method("Die Suppe pürieren und heiß servieren.")),
+                "Eine leckere und einfache Tomatensuppe, perfekt für kalte Tage.",
+                "Maria Müller",
+                "https://example.com/tomatensuppe",
+                List.of(new Category("Suppe"),
+                        (new Category("warm")))));
+        //WHEN
+        mockMvc.perform(post("/api/recipes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                "title":"",
+                                "description": ""
+                                }
+                                """)
+                )
+                //THEN
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().string("Das hat leider nicht geklappt, bitte Titel und Beschreibung angeben"));
+    }
+
+
 
 }

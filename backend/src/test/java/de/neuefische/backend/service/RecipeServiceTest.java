@@ -1,9 +1,6 @@
 package de.neuefische.backend.service;
 
-import de.neuefische.backend.model.Category;
-import de.neuefische.backend.model.Ingredients;
-import de.neuefische.backend.model.Method;
-import de.neuefische.backend.model.Recipe;
+import de.neuefische.backend.model.*;
 import de.neuefische.backend.repository.RecipeRepository;
 import org.junit.jupiter.api.Test;
 import java.util.Collections;
@@ -11,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
 
 
 class RecipeServiceTest {
@@ -75,7 +73,20 @@ class RecipeServiceTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    void AddRecipeWithoutIdThenReturnRecipeWithId() {
+        //GIVEN
+        String id = "1";
+        Recipe expected = new Recipe("6537c8883bacac19d92a6485", "45", "Tomatensuppe3",List.of(new Ingredients("g", "500", "Tomaten")),
+                List.of(new Method("Die Zwiebel und den Knoblauch fein hacken.In einem Topf das Olivenöl erhitzen und die Zwiebel und den Knoblauch darin anschwitzen.Die Tomaten in Würfel schneiden und hinzufügen. Den Zucker zugeben und kurz karamellisieren lassen." +
+                        "Die Gemüsebrühe hinzufügen und alles zum Kochen bringen.Die Suppe etwa 20 Minuten köcheln lassen.Mit Salz und Pfeffer abschmecken.Die Suppe pürieren und heiß servieren.")),
+                "Eine leckere und einfache Tomatensuppe, perfekt für kalte Tage.", "Maria Müller", "https://example.com/tomatensuppe",List.of(new Category("Suppe,warm")));
+        //WHEN
+        when(recipeRepository.findById(id)).thenReturn(Optional.of(expected));
+        Recipe actual = recipeService.getRecipeById(id);
+        //THEN
+        verify(recipeRepository).findById(id);
+        assertEquals(expected, actual);
 
-
-
+    }
 }
