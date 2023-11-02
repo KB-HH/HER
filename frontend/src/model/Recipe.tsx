@@ -7,10 +7,10 @@ export type Recipe = {
     description: string,
     author: string,
     url: string,
-    categories: Categories[];
+    categories: Category[];
 }
 export type Ingredients = {
-    id: string;
+    id: number;
     unit: string;
     quantity: number;
     name: string;
@@ -20,7 +20,7 @@ export type Method = {
     id: number;
     method: string;
 };
-export type Categories = {
+export type Category = {
     id: number;
     categories: string;
 };

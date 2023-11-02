@@ -40,4 +40,8 @@ public class RecipeService {
         return recipeRepository.save(updatedRecipe);
     }
 
+    public Recipe save(Recipe saveRecipe) {
+        return recipeRepository.save(saveRecipe);
+    }
+
 }
