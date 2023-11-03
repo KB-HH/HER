@@ -1,13 +1,13 @@
-import {useRef, useState} from "react";
-import {Link, useNavigate} from "react-router-dom";
+import { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Home from "../pages/Home.tsx";
-import {Category, Ingredients, Method, Recipe} from "../model/Recipe.tsx";
+import { Category, Ingredients, Method, Recipe } from "../model/Recipe.tsx";
 import axios from "axios";
 
 type AddRecipeProps = {
     addNewRecipe: (recipe: Recipe) => void;
     getAll: () => void;
-    uri:string
+    uri: string;
 };
 
 export default function AddRecipe(props: AddRecipeProps) {
@@ -22,14 +22,10 @@ export default function AddRecipe(props: AddRecipeProps) {
         url: "",
     };
     const [newRecipe, setNewRecipe] = useState<Recipe>(initialRecipe);
-    const [showIngredientsTitle, setShowIngredientsTitle] = useState(false);
-    const [newMethods, setNewMethods] = useState<Method[]>([]);
-    const [showMethodsTitle, setShowMethodsTitle] = useState(false);
-    const [newCategories, setNewCategories] = useState<Category[]>([]);
-    const [showCategoriesTitle, setShowCategoriesTitle] = useState(false);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const quantityInputRef = useRef<HTMLInputElement | null>(null);
+
     const handleRecipeChange = (field: string, value: string) => {
         setNewRecipe({ ...newRecipe, [field]: value });
     };
@@ -47,7 +43,7 @@ export default function AddRecipe(props: AddRecipeProps) {
         setNewRecipe({ ...newRecipe, ingredients: updatedIngredients });
     };
 
-    const handleMethodChange = (id: number, field: string, value: string) => {
+    const handleMethodChange = (id: number, field: string, value: string | number) => {
         const updatedMethods = newRecipe.method.map((method) => {
             if (method.id === id) {
                 return {
@@ -60,8 +56,8 @@ export default function AddRecipe(props: AddRecipeProps) {
         setNewRecipe({ ...newRecipe, method: updatedMethods });
     };
 
-    const handleCategoryChange = (id: number, field: string, value: string) => {
-        const updatedCategories = newCategories.map((category) => {
+    const handleCategoryChange = (id: number, field: string, value: string | number) => {
+        const updatedCategories = newRecipe.categories.map((category) => {
             if (category.id === id) {
                 return {
                     ...category,
@@ -70,7 +66,7 @@ export default function AddRecipe(props: AddRecipeProps) {
             }
             return category;
         });
-        setNewRecipe( {...newRecipe, categories: updatedCategories});
+        setNewRecipe({ ...newRecipe, categories: updatedCategories });
     };
 
     const addNewIngredient = () => {
@@ -81,7 +77,6 @@ export default function AddRecipe(props: AddRecipeProps) {
             unit: "",
         };
         setNewRecipe({ ...newRecipe, ingredients: [...newRecipe.ingredients, newIngredient] });
-        setShowIngredientsTitle(true);
         if (quantityInputRef.current) {
             quantityInputRef.current.focus();
         }
@@ -92,8 +87,7 @@ export default function AddRecipe(props: AddRecipeProps) {
             id: newRecipe.method.length + 1,
             method: "",
         };
-        setNewMethods([...newMethods, newMethod]);
-        setShowMethodsTitle(true);
+        setNewRecipe({ ...newRecipe, method: [...newRecipe.method, newMethod] });
     };
 
     const addNewCategory = () => {
@@ -101,22 +95,27 @@ export default function AddRecipe(props: AddRecipeProps) {
             id: newRecipe.categories.length + 1,
             categories: "",
         };
-        setNewCategories([...newCategories, newCategory]);
-        setShowCategoriesTitle(true);
+        setNewRecipe({ ...newRecipe, categories: [...newRecipe.categories, newCategory] });
     };
 
-
     const saveRecipe = () => {
-        axios
-            .post(props.uri, newRecipe)
-            .then(() => {
-                props.getAll();
-                navigate("/");
-            })
-            .catch((error) => {
-                alert('Fehler:' + error.response.data);
-                navigate("/recipes/add");
-            });
+        const hasNonZeroQuantity = newRecipe.ingredients.some((ingredient) => ingredient.quantity > 0);
+        if (hasNonZeroQuantity) {
+            axios
+                .post(props.uri, newRecipe)
+                .then((response) => {
+                    const createdRecipe = response.data;
+                    props.addNewRecipe(createdRecipe);
+                    props.getAll();
+                    navigate("/");
+                })
+                .catch((error) => {
+                    alert('Fehler:' + error.response.data);
+                    navigate("/recipes/add");
+                });
+        } else {
+            alert('Gebe bitte mindestens eine Zutat ein, sonst kann Du leider kein Rezept speichern.');
+        }
     };
 
     return (
@@ -128,7 +127,6 @@ export default function AddRecipe(props: AddRecipeProps) {
             <div className="recipe-card">
                 <h1>Neues Rezept</h1>
                 <form>
-
                     <h2>
                         <input
                             type="text"
@@ -145,12 +143,11 @@ export default function AddRecipe(props: AddRecipeProps) {
                     </h2>
 
                     <div className="recipe-card">
-                            <div id="three">Aside</div>
-                        {showIngredientsTitle && <h2>Zutaten</h2>}
+                        <h2>Zutaten</h2>
                         {newRecipe.ingredients.map((ingredient, index) => (
                             <div key={ingredient.id || index}>
                                 <input
-                                    ref={(ref) => (index === newRecipe.ingredients.length - 1? (quantityInputRef.current && ref) : null)}
+                                    ref={(ref) => (index === newRecipe.ingredients.length - 1 ? (quantityInputRef.current && ref) : null)}
                                     type="number"
                                     placeholder="Menge"
                                     value={ingredient.quantity.toString()}
@@ -173,72 +170,70 @@ export default function AddRecipe(props: AddRecipeProps) {
                         <button type="button" onClick={addNewIngredient}>
                             Zutaten
                         </button>
-
-                        <div className="div_list">
-                            <div id="four">
-                            {showMethodsTitle && <h2>Schritte</h2>}
-                            {newMethods.map((method, index) => (
-                                <div key={method.id || index}>
-                                    <input
-                                        type="text"
-                                        placeholder="Schritt"
-                                        value={method.method}
-                                        onChange={(e) => handleMethodChange(method.id, 'method', e.target.value)}
-                                    />
-                                </div>
-                            ))}
-                            </div>
-                        </div>
-                            <button type="button" onClick={addNewMethod}>
-                                Schritte
-                            </button>
-
-                            <div className="div_list">
-                                {showCategoriesTitle && <h2>Kategorien</h2>}
-                                {newCategories.map((category, index) => (
-                                    <div key={category.id || index}>
-                                        <input
-                                            type="text"
-                                            placeholder="Category"
-                                            value={category.categories}
-                                            onChange={(e) => handleCategoryChange(category.id, 'category', e.target.value)}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                                <button type="button" onClick={addNewCategory}>
-                                    Kategorie
-                                </button>
-                        <h3>
-                            <input
-                                type="number"
-                                step="5"
-                                placeholder= "Kochzeit"
-                                value={newRecipe.cookingtime}
-                                onChange={(e) => handleRecipeChange('cookingtime', e.target.value)}
-                            />
-                            <input
-                                type="text"
-                                placeholder= "Author"
-                                value={newRecipe.author}
-                                onChange={(e) => handleRecipeChange('author', e.target.value)}
-                            />
-                            <input
-                                type="text"
-                                placeholder= "Bilder"
-                                value={newRecipe.url}
-                                onChange={(e) => handleRecipeChange('url', e.target.value)}
-                            />
-                        </h3>
-                        {/* weitere Felder */}
-
                     </div>
+
+                    <div className="div_list">
+                        <h2>Schritte</h2>
+                        {newRecipe.method.map((method, index) => (
+                            <div key={method.id || index}>
+                                <input
+                                    type="text"
+                                    placeholder="Schritt"
+                                    value={method.method}
+                                    onChange={(e) => handleMethodChange(method.id, 'method', e.target.value)}
+                                />
+                            </div>
+                        ))}
+                        <button type="button" onClick={addNewMethod}>
+                            Schritte
+                        </button>
+                    </div>
+
+                    <div className="div_list">
+                        <h2>Kategorien</h2>
+                        {newRecipe.categories.map((category, index) => (
+                            <div key={category.id || index}>
+                                <input
+                                    type="text"
+                                    placeholder="Kategorie"
+                                    value={category.categories}
+                                    onChange={(e) => handleCategoryChange(category.id, 'categories', e.target.value)}
+                                />
+                            </div>
+                        ))}
+                        <button type="button" onClick={addNewCategory}>
+                            Kategorie
+                        </button>
+                    </div>
+
+                    <h3>
+                        <input
+                            type="number"
+                            step="5"
+                            placeholder="Kochzeit"
+                            value={newRecipe.cookingtime}
+                            onChange={(e) => handleRecipeChange('cookingtime', e.target.value)}
+                        />
+                        <label>Kochzeit</label>
+                        <input
+                            type="text"
+                            placeholder="Author"
+                            value={newRecipe.author}
+                            onChange={(e) => handleRecipeChange('author', e.target.value)}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Bilder"
+                            value={newRecipe.url}
+                            onChange={(e) => handleRecipeChange('url', e.target.value)}
+                        />
+                    </h3>
+
                     <button type="button" onClick={saveRecipe}>
-                        Save Recipe
+                        Rezept speichern
                     </button>
                 </form>
             </div>
-
         </>
     );
 }

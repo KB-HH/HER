@@ -2,17 +2,18 @@
     display: grid;
     background-color: #ffffff;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-template-rows: auto auto;
     gap: 20px;
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 10px;
     border-radius: 18px;
-    text-decoration: none;
 }
 .recipe-card-container {
     display: grid;
     text-decoration: none;
     grid-template-columns: repeat(3, 2fr);
+    grid-template-rows: auto auto;
     gap: 5px;
     max-width: 800px;
     margin: 0 auto;
@@ -33,6 +34,11 @@
     width: 100%;
     height: 150px;
 }
+.recipe-add-icon img {
+    width: 1em;
+    height: 1em;
+    cursor: pointer;
+}
 
 .recipe-info {
     padding: 15px;
@@ -40,7 +46,7 @@
 }
 
 .recipe-title {
-    font-family: Chalkboard serif;
+    font-family: "Courier New", serif;
     text-decoration: none;
     color: rgb(66, 65, 65);
     font-size: 20px;
@@ -65,64 +71,49 @@
 .recipe-button:hover {
     background-color: #0056b3;
 }
-/* Stil für die Beschreibung (Textbereich) */
+
 textarea {
     width: 100%;
-    height: 150px; /* Passe die Höhe nach Bedarf an */
+    height: 150px;
     padding: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    font-size: 16px;
-    font-family: Menlo, sans-serif;
+    font-size: 16em;
+    font-family: "Courier New", serif;
 }
 
-/* Stil für die Schritte und Kategorien */
-.flex-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 10px 20px; /* row-gap column gap */
-    row-gap: 10px;
-    column-gap: 20px;
-}
 .recipe-list {
-    list-style-type: disc;
-    padding-left: 20px; /* Eingerückt, um Platz für die Aufzählungspunkte zu schaffen */
-    margin: 5px;
-    font-family: Menlo, serif;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: fit-content;
+    border-radius: 5px;
+    margin: 2em;
+    padding: 3em;
 }
 
 .recipe-list-item {
-    width: 50%;
+    width: 80%;
     display: flex;
     align-items: flex-start;
-    flex-direction: column;
+    flex-direction: row;
 }
 
-.recipe-details-left {
-    width: 40%;
-    height: auto;
-    padding: 2px;
-    font-family: Menlo, sans-serif;
-
-}
 .recipe-details {
     display: flex;
-    flex-direction: row;
-    width: 70%;
+    flex-direction: column;
+    align-items: center;
+    width: 60%;
 }
-.description {
-    width: 150%;
-
-}
-.instructions {
-    margin-top: 20px;
-    width: 150%;
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .flex-item {
-    width: 100%;
+    flex-basis: 50%;
+    flex-grow: 1;
+    flex-shrink: 1;
 }
 
 input[type="text"] {
@@ -144,7 +135,29 @@ button {
     cursor: pointer;
     transition: background-color 0.3s;
 }
+.label {
+    display: flex;
+    width:100%;
+    align-items: center;
+    background-color: #007BFF;
+    color: white;
+
+}
+
+.label input[type="text"], .label input[type="number"] {
+    background-color: #007BFF;
+    width:100%;
+    color:white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-right:10px
+}
 
 button:hover {
     background-color: #0056b3;
 }
+
