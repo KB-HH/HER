@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import Home from "../pages/Home";
 import { Category, Ingredients, Method, Recipe } from "../model/Recipe";
@@ -170,7 +170,13 @@ export default function EditRecipe(props: EditRecipeProps) {
                                     alt="löschen"
                                     title="Kategorie löschen"
                                     onClick={() => handleDeleteCategory(index)}
-                                    style={{ cursor: "pointer", width: "20px", height: "20px" }}
+                                    onKeyDown={(event: React.KeyboardEvent<HTMLImageElement>) => {
+                                        if (event.key === 'Enter') {
+                                            handleDeleteCategory(index);
+                                        }
+                                    }}
+                                    style={{ cursor: "pointer", width: "1em", height: "1em" }}
+                                    tabIndex={0}
                                 />
                             </div>
                         ))}
@@ -179,7 +185,8 @@ export default function EditRecipe(props: EditRecipeProps) {
                             alt="hinzufügen"
                             title="Kategorie hinzufügen"
                             onClick={addNewCategory}
-                            style={{ cursor: "pointer", width: "20px", height: "20px" }}
+                            style={{ cursor: "pointer", width: "1em", height: "1em" }}
+                            tabIndex={0}
                         />
 
                     </h2>
@@ -217,7 +224,13 @@ export default function EditRecipe(props: EditRecipeProps) {
                                     alt="löschen"
                                     title="Zutat löschen"
                                     onClick={() => handleDeleteIngredient(index)}
+                                    onKeyDown={(event) => {
+                                        if (event.key === 'Enter') {
+                                            handleDeleteIngredient(index);
+                                        }
+                                    }}
                                     style={{ cursor: "pointer", width: "20px", height: "20px" }}
+                                    tabIndex={0}
                                 />
                             </div>
                         ))}
@@ -227,24 +240,27 @@ export default function EditRecipe(props: EditRecipeProps) {
                             title="Zutat hinzufügen"
                             onClick={addNewIngredient}
                             style={{ cursor: "pointer", width: "20px", height: "20px" }}
+                            tabIndex={0}
                         />
                     </div>
                     <h2>Beschreibung</h2>
                     <div className="recipe-gallery">
                         <img src={recipe?.url} alt="Rezeptbild" />
                         <div className="recipe-details">
-                            <input
+                            <textarea
                                 value={recipe?.description}
                                 onChange={(event) => handleRecipeChange("description", event.target.value)}
+                                style={{ cursor: "pointer", width: "20em", height: "auto" }}
+                                readOnly={true}
                             />
                         </div>
                     </div>
-                    <div className="flex-box">
+                    <div className="recipe-details">
                         <h2>Schritte</h2>
                         {recipe?.method.map((method, index) => (
-                            <div key={method.id || index} className="flex-item">
-                                <input
-                                    value={"Schritt " + (index + 1) + " " + method.method}
+                            <div key={method.id || index} className="recipe-gallery">
+                                <textarea
+                                    value={method.method}
                                     onChange={(event) =>
                                         handleFieldChange(index, "method", event.target.value)
                                     }
@@ -252,9 +268,15 @@ export default function EditRecipe(props: EditRecipeProps) {
                                 <img
                                     src="/icons8-löschen-24.png"
                                     alt="löschen"
-                                    title="Schritt lösche"
+                                    title="Schritt löschen"
                                     onClick={() => handleDeleteMethod(index)}
-                                    style={{ cursor: "pointer", width: "20px", height: "20px" }}
+                                    onKeyDown={(event) => {
+                                        if (event.key === 'Enter') {
+                                            handleDeleteMethod(index);
+                                        }
+                                    }}
+                                    style={{ cursor: "pointer", width: "1.5em", height: "1.5em" }}
+                                    tabIndex={0}
                                 />
                             </div>
                         ))}
@@ -263,8 +285,8 @@ export default function EditRecipe(props: EditRecipeProps) {
                             alt="bearbeiten"
                             title="Schritte bearbeiten"
                             onClick={addNewMethod}
-                            style={{ cursor: "pointer", width: "20px", height: "20px" }}
-                            className="recipe-add-icon"
+                            style={{ cursor: "pointer", width: "2em", height: "2em" }}
+                            tabIndex={0}
                         />
                     </div>
                     <div className="flex-item">
