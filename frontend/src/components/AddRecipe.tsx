@@ -1,7 +1,15 @@
-import { useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, {useRef, useState} from "react";
+import {Link, useNavigate} from "react-router-dom";
 import Home from "../pages/Home.tsx";
-import { Category, Ingredients, Method, Recipe } from "../model/Recipe.tsx";
+import {Recipe} from "../model/Recipe.tsx";
+import {
+    addNewIngredient,
+    addNewMethod,
+    addNewCategory,
+    deleteIngredient,
+    deleteMethod,
+    deleteCategory
+} from "../model/RecipeFunctions";
 import axios from "axios";
 
 type AddRecipeProps = {
@@ -69,33 +77,46 @@ export default function AddRecipe(props: AddRecipeProps) {
         setNewRecipe({ ...newRecipe, categories: updatedCategories });
     };
 
-    const addNewIngredient = () => {
-        const newIngredient: Ingredients = {
-            id: newRecipe.ingredients.length + 1,
-            name: "",
-            quantity: 0,
-            unit: "",
-        };
-        setNewRecipe({ ...newRecipe, ingredients: [...newRecipe.ingredients, newIngredient] });
-        if (quantityInputRef.current) {
-            quantityInputRef.current.focus();
+    const handleAddNewIngredient = () => {
+        if (newRecipe) {
+            const updatedRecipe = addNewIngredient(newRecipe, quantityInputRef);
+            setNewRecipe(updatedRecipe);
         }
     };
 
-    const addNewMethod = () => {
-        const newMethod: Method = {
-            id: newRecipe.method.length + 1,
-            method: "",
-        };
-        setNewRecipe({ ...newRecipe, method: [...newRecipe.method, newMethod] });
+    const handleAddNewMethod = () => {
+        if (newRecipe) {
+            const updatedRecipe = addNewMethod(newRecipe);
+            setNewRecipe(updatedRecipe);
+        }
     };
 
-    const addNewCategory = () => {
-        const newCategory: Category = {
-            id: newRecipe.categories.length + 1,
-            categories: "",
-        };
-        setNewRecipe({ ...newRecipe, categories: [...newRecipe.categories, newCategory] });
+    const handleAddNewCategory = () => {
+        if (newRecipe) {
+            const updatedRecipe = addNewCategory(newRecipe);
+            setNewRecipe(updatedRecipe);
+        }
+    };
+
+    const handleDeleteIngredient = (id: number) => {
+        if (newRecipe) {
+            const updatedRecipe = deleteIngredient(newRecipe, id);
+            setNewRecipe(updatedRecipe);
+        }
+    };
+
+    const handleDeleteMethod = (id: number) => {
+        if (newRecipe) {
+            const updatedRecipe = deleteMethod(newRecipe, id);
+            setNewRecipe(updatedRecipe);
+        }
+    };
+
+    const handleDeleteCategory = (id: number) => {
+        if (newRecipe) {
+            const updatedRecipe = deleteCategory(newRecipe, id);
+            setNewRecipe(updatedRecipe);
+        }
     };
 
     const saveRecipe = () => {
@@ -142,10 +163,10 @@ export default function AddRecipe(props: AddRecipeProps) {
                         />
                     </h2>
 
-                    <div className="recipe-card">
+                    <div className="recipe-details">
                         <h2>Zutaten</h2>
                         {newRecipe.ingredients.map((ingredient, index) => (
-                            <div key={ingredient.id || index}>
+                            <div key={ingredient.id || index} className="recipe-list-item">
                                 <input
                                     ref={(ref) => (index === newRecipe.ingredients.length - 1 ? (quantityInputRef.current && ref) : null)}
                                     type="number"
@@ -165,9 +186,22 @@ export default function AddRecipe(props: AddRecipeProps) {
                                     value={ingredient.name}
                                     onChange={(e) => handleIngredientChange(ingredient.id, 'name', e.target.value)}
                                 />
+                                <img
+                                    src="/icons8-löschen-24.png"
+                                    alt="löschen"
+                                    title="Zutat löschen"
+                                    onClick={() => handleDeleteIngredient(index)}
+                                    onKeyDown={(event: React.KeyboardEvent<HTMLImageElement>) => {
+                                        if (event.key === 'Enter') {
+                                            handleDeleteIngredient(index);
+                                        }
+                                    }}
+                                    style={{ cursor: "pointer", width: "20px", height: "20px" }}
+                                    tabIndex={0}
+                                />
                             </div>
                         ))}
-                        <button type="button" onClick={addNewIngredient}>
+                        <button type="button" onClick={handleAddNewIngredient}>
                             Zutaten
                         </button>
                     </div>
@@ -182,9 +216,22 @@ export default function AddRecipe(props: AddRecipeProps) {
                                     value={method.method}
                                     onChange={(e) => handleMethodChange(method.id, 'method', e.target.value)}
                                 />
+                                <img
+                                    src="/icons8-löschen-24.png"
+                                    alt="löschen"
+                                    title="Schritt löschen"
+                                    onClick={() => handleDeleteMethod(index)}
+                                    onKeyDown={(event: React.KeyboardEvent<HTMLImageElement>) => {
+                                        if (event.key === 'Enter') {
+                                            handleDeleteMethod(index);
+                                        }
+                                    }}
+                                    style={{ cursor: "pointer", width: "20px", height: "20px" }}
+                                    tabIndex={0}
+                                />
                             </div>
                         ))}
-                        <button type="button" onClick={addNewMethod}>
+                        <button type="button" onClick={handleAddNewMethod}>
                             Schritte
                         </button>
                     </div>
@@ -199,9 +246,22 @@ export default function AddRecipe(props: AddRecipeProps) {
                                     value={category.categories}
                                     onChange={(e) => handleCategoryChange(category.id, 'categories', e.target.value)}
                                 />
+                                <img
+                                    src="/icons8-löschen-24.png"
+                                    alt="löschen"
+                                    title="Kategorie löschen"
+                                    onClick={() => handleDeleteCategory(index)}
+                                    onKeyDown={(event: React.KeyboardEvent<HTMLImageElement>) => {
+                                        if (event.key === 'Enter') {
+                                            handleDeleteCategory(index);
+                                        }
+                                    }}
+                                    style={{ cursor: "pointer", width: "20px", height: "20px" }}
+                                    tabIndex={0}
+                                />
                             </div>
                         ))}
-                        <button type="button" onClick={addNewCategory}>
+                        <button type="button" onClick={handleAddNewCategory}>
                             Kategorie
                         </button>
                     </div>
