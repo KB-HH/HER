@@ -1,5 +1,6 @@
 
 import { Recipe, Ingredients, Method, Category } from "./Recipe";
+import React from "react";
 
 
 export function addNewIngredient(recipe: Recipe, quantityInputRef: React.RefObject<HTMLInputElement>): Recipe {

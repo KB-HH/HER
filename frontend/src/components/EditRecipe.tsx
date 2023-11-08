@@ -116,8 +116,6 @@ export default function EditRecipe(props: EditRecipeProps) {
         }
     };
 
-
-
     return (
         <>
             <Home />
@@ -144,7 +142,7 @@ export default function EditRecipe(props: EditRecipeProps) {
                             value={recipe?.author}
                             onChange={(event) => handleRecipeChange("author", event.target.value)}
                         />
-                        <label htmlFor="cookingtime">Kochzeit </label>
+                        <label>Kochzeit </label>
                         <input
                             type="number"
                             step="5"
@@ -152,12 +150,12 @@ export default function EditRecipe(props: EditRecipeProps) {
                             name="cookingtime"
                             value={recipe?.cookingtime}
                             onChange={(event) => handleRecipeChange("cookingtime", Number(event.target.value))}
+                            style={{ cursor: "pointer", width: "4em", height: "1.2em" }}
                         />
-                        <div className="label">
-                            <label>Kategorien :</label>
-                        </div>
+
                         {recipe?.categories.map((categories, index) => (
-                            <div key={categories.id || index} className="label">
+                            <div key={categories.id || index} className="flex-box">
+                                <div className="label">
                                 <input
                                     type="text"
                                     value={categories.categories}
@@ -175,9 +173,10 @@ export default function EditRecipe(props: EditRecipeProps) {
                                             handleDeleteCategory(index);
                                         }
                                     }}
-                                    style={{ cursor: "pointer", width: "1em", height: "1em" }}
+                                    style={{ cursor: "pointer", width: "0.7em", height: "0.7em" }}
                                     tabIndex={0}
                                 />
+                                </div>
                             </div>
                         ))}
                         <img
@@ -185,12 +184,15 @@ export default function EditRecipe(props: EditRecipeProps) {
                             alt="hinzufügen"
                             title="Kategorie hinzufügen"
                             onClick={addNewCategory}
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter' || event.key === ' ') {
+                                    addNewIngredient();
+                                }
+                            }}
                             style={{ cursor: "pointer", width: "1em", height: "1em" }}
                             tabIndex={0}
                         />
-
                     </h2>
-
                     <div className="recipe-details">
                         <h2>Zutaten</h2>
                         {recipe?.ingredients.map((ingredient, index) => (
@@ -202,6 +204,8 @@ export default function EditRecipe(props: EditRecipeProps) {
                                         handleFieldChange(index, "quantity", event.target.value)
                                     }
                                     placeholder="Menge"
+                                    style={{ cursor: "pointer", width: "4em", height: "1em" }}
+                                    tabIndex={0}
                                 />
                                 <input
                                     type="text"
@@ -210,6 +214,8 @@ export default function EditRecipe(props: EditRecipeProps) {
                                         handleFieldChange(index, "unit", event.target.value)
                                     }
                                     placeholder="Einheit"
+                                    style={{ cursor: "pointer", width: "4em", height: "1em" }}
+                                    tabIndex={0}
                                 />
                                 <input
                                     type="text"
@@ -218,6 +224,8 @@ export default function EditRecipe(props: EditRecipeProps) {
                                         handleFieldChange(index, "name", event.target.value)
                                     }
                                     placeholder="Zutat"
+                                    style={{ cursor: "pointer", width: "20em", height: "1em" }}
+                                    tabIndex={0}
                                 />
                                 <img
                                     src="/icons8-löschen-24.png"
@@ -229,7 +237,7 @@ export default function EditRecipe(props: EditRecipeProps) {
                                             handleDeleteIngredient(index);
                                         }
                                     }}
-                                    style={{ cursor: "pointer", width: "20px", height: "20px" }}
+                                    style={{ cursor: "pointer", width: "1.2em", height: "1.2em" }}
                                     tabIndex={0}
                                 />
                             </div>
@@ -239,7 +247,12 @@ export default function EditRecipe(props: EditRecipeProps) {
                             alt="hinzufügen"
                             title="Zutat hinzufügen"
                             onClick={addNewIngredient}
-                            style={{ cursor: "pointer", width: "20px", height: "20px" }}
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter' || event.key === ' ') {
+                                    addNewIngredient();
+                                }
+                            }}
+                            style={{ cursor: "pointer", width: "1.5em", height: "1.5em" }}
                             tabIndex={0}
                         />
                     </div>
@@ -250,15 +263,14 @@ export default function EditRecipe(props: EditRecipeProps) {
                             <textarea
                                 value={recipe?.description}
                                 onChange={(event) => handleRecipeChange("description", event.target.value)}
-                                style={{ cursor: "pointer", width: "20em", height: "auto" }}
-                                readOnly={true}
+                                style={{ cursor: "pointer", width: "20em", marginLeft: "5em", height: "auto" }}
                             />
                         </div>
                     </div>
                     <div className="recipe-details">
                         <h2>Schritte</h2>
                         {recipe?.method.map((method, index) => (
-                            <div key={method.id || index} className="recipe-gallery">
+                            <div key={method.id || index} className="recipe-list-item">
                                 <textarea
                                     value={method.method}
                                     onChange={(event) =>
@@ -275,7 +287,7 @@ export default function EditRecipe(props: EditRecipeProps) {
                                             handleDeleteMethod(index);
                                         }
                                     }}
-                                    style={{ cursor: "pointer", width: "1.5em", height: "1.5em" }}
+                                    style={{ cursor: "pointer", width: "1em", height: "1em" }}
                                     tabIndex={0}
                                 />
                             </div>
@@ -285,7 +297,12 @@ export default function EditRecipe(props: EditRecipeProps) {
                             alt="bearbeiten"
                             title="Schritte bearbeiten"
                             onClick={addNewMethod}
-                            style={{ cursor: "pointer", width: "2em", height: "2em" }}
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter' || event.key === ' ') {
+                                    addNewIngredient();
+                                }
+                            }}
+                            style={{ cursor: "pointer", width: "1.5em", height: "1.5em" }}
                             tabIndex={0}
                         />
                     </div>

@@ -17,7 +17,7 @@ export default function RecipeCard(props: RecipeCardProps) {
     return (
 
         <div className="recipe-gallery">
-            <Link to={`/api/recipes/${props.recipe.id}`} onClick={() => props.recipe && onHandleEdit(props.recipe)}>
+            <Link to={`/api/recipes/${props.recipe.id}`} onClick={() => props.recipe && onHandleEdit(props.recipe)} className="no-underline">
                 <div className="recipe-title">
                 <h2>{props.recipe.title}</h2>
                     </div>
@@ -25,7 +25,7 @@ export default function RecipeCard(props: RecipeCardProps) {
                 <img
                     src={props.recipe.url}
                     alt={props.recipe.url}/>
-                <h3>{props.recipe.description}</h3>
+                <h3>{props.recipe.description} </h3>
                 </div>
             </Link>
             </div>

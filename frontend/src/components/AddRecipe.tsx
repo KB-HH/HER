@@ -30,8 +30,10 @@ export default function AddRecipe(props: AddRecipeProps) {
         url: "",
     };
     const [newRecipe, setNewRecipe] = useState<Recipe>(initialRecipe);
+    const [showIngredientsTitle, setShowIngredientsTitle] = useState(false);
+    const [showMethodsTitle, setShowMethodsTitle] = useState(false);
+    const [showCategoriesTitle, setShowCategoriesTitle] = useState(false);
     const navigate = useNavigate();
-
     const quantityInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleRecipeChange = (field: string, value: string) => {
@@ -81,6 +83,7 @@ export default function AddRecipe(props: AddRecipeProps) {
         if (newRecipe) {
             const updatedRecipe = addNewIngredient(newRecipe, quantityInputRef);
             setNewRecipe(updatedRecipe);
+            setShowIngredientsTitle(true);
         }
     };
 
@@ -88,6 +91,7 @@ export default function AddRecipe(props: AddRecipeProps) {
         if (newRecipe) {
             const updatedRecipe = addNewMethod(newRecipe);
             setNewRecipe(updatedRecipe);
+            setShowMethodsTitle(true);
         }
     };
 
@@ -95,6 +99,7 @@ export default function AddRecipe(props: AddRecipeProps) {
         if (newRecipe) {
             const updatedRecipe = addNewCategory(newRecipe);
             setNewRecipe(updatedRecipe);
+            setShowCategoriesTitle(true);
         }
     };
 
@@ -145,46 +150,51 @@ export default function AddRecipe(props: AddRecipeProps) {
             <Link to="/">
                 <img src="/icons8-zurück-48.png" alt="Back" />
             </Link>
-            <div className="recipe-card">
+            <div className="div_description">
+                <div className="recipe-title">
                 <h1>Neues Rezept</h1>
+                </div>
                 <form>
                     <h2>
                         <input
                             type="text"
-                            placeholder="Title"
+                            placeholder="Wie heißt dein Rezept?"
                             value={newRecipe.title}
-                            onChange={(e) => handleRecipeChange('title', e.target.value)}
+                            onChange={(event) => handleRecipeChange('title', event.target.value)}
+                            style={{ cursor: "pointer",width: "60em", height: "1.5em", marginBottom: "1em" }}
                         />
-                        <input
-                            type="text"
-                            placeholder="Beschreibung"
+                        <textarea
+                            placeholder="Gebe uns bitte eine kurze Beschreibung dazu..."
                             value={newRecipe.description}
-                            onChange={(e) => handleRecipeChange('description', e.target.value)}
+                            onChange={(event) => handleRecipeChange('description', event.target.value) }
+                            style={{ cursor: "pointer", width: "56em", marginLeft: "0.2em" ,fontFamily: 'Courier New, serif',fontSize: '0.7em', border: '1px solid #ccc', borderRadius: "1em"}}
                         />
                     </h2>
 
                     <div className="recipe-details">
-                        <h2>Zutaten</h2>
+                        {showIngredientsTitle && <h2>Zutaten</h2>}
                         {newRecipe.ingredients.map((ingredient, index) => (
                             <div key={ingredient.id || index} className="recipe-list-item">
                                 <input
-                                    ref={(ref) => (index === newRecipe.ingredients.length - 1 ? (quantityInputRef.current && ref) : null)}
                                     type="number"
                                     placeholder="Menge"
                                     value={ingredient.quantity.toString()}
-                                    onChange={(e) => handleIngredientChange(ingredient.id, 'quantity', Number(e.target.value))}
+                                    onChange={(event) => handleIngredientChange(ingredient.id, 'quantity', Number(event.target.value))}
+                                    style={{ cursor: "pointer",width: "4em", height: "1.9em",borderRadius:"10%" }}
                                 />
                                 <input
                                     type="text"
                                     placeholder="Einheit"
                                     value={ingredient.unit}
-                                    onChange={(e) => handleIngredientChange(ingredient.id, 'unit', e.target.value)}
+                                    onChange={(event) => handleIngredientChange(ingredient.id, 'unit', event.target.value)}
+                                    style={{ cursor: "pointer",width: "5em"}}
                                 />
                                 <input
                                     type="text"
                                     placeholder="Zutat"
                                     value={ingredient.name}
-                                    onChange={(e) => handleIngredientChange(ingredient.id, 'name', e.target.value)}
+                                    onChange={(event) => handleIngredientChange(ingredient.id, 'name', event.target.value)}
+                                    style={{ cursor: "pointer",width: "15em"}}
                                 />
                                 <img
                                     src="/icons8-löschen-24.png"
@@ -196,7 +206,7 @@ export default function AddRecipe(props: AddRecipeProps) {
                                             handleDeleteIngredient(index);
                                         }
                                     }}
-                                    style={{ cursor: "pointer", width: "20px", height: "20px" }}
+                                    style={{ cursor: "pointer", width: "1em", height: "1em" }}
                                     tabIndex={0}
                                 />
                             </div>
@@ -204,17 +214,14 @@ export default function AddRecipe(props: AddRecipeProps) {
                         <button type="button" onClick={handleAddNewIngredient}>
                             Zutaten
                         </button>
-                    </div>
-
-                    <div className="div_list">
-                        <h2>Schritte</h2>
+                        {showMethodsTitle && <h2>Schritte</h2>}
                         {newRecipe.method.map((method, index) => (
                             <div key={method.id || index}>
-                                <input
-                                    type="text"
+                                <textarea
                                     placeholder="Schritt"
                                     value={method.method}
-                                    onChange={(e) => handleMethodChange(method.id, 'method', e.target.value)}
+                                    onChange={(event) => handleMethodChange(method.id, 'method', event.target.value)}
+                                    style={{ cursor: "pointer", width: "30em" ,fontFamily: 'Courier New, serif', marginLeft: "5em",fontSize: '1em', border: '1px solid #ccc', borderRadius: "1em"}}
                                 />
                                 <img
                                     src="/icons8-löschen-24.png"
@@ -226,7 +233,7 @@ export default function AddRecipe(props: AddRecipeProps) {
                                             handleDeleteMethod(index);
                                         }
                                     }}
-                                    style={{ cursor: "pointer", width: "20px", height: "20px" }}
+                                    style={{ cursor: "pointer", width: "1em", height: "1em" }}
                                     tabIndex={0}
                                 />
                             </div>
@@ -234,17 +241,15 @@ export default function AddRecipe(props: AddRecipeProps) {
                         <button type="button" onClick={handleAddNewMethod}>
                             Schritte
                         </button>
-                    </div>
 
-                    <div className="div_list">
-                        <h2>Kategorien</h2>
+                        {showCategoriesTitle && <h2>Kategorien</h2>}
                         {newRecipe.categories.map((category, index) => (
                             <div key={category.id || index}>
                                 <input
                                     type="text"
                                     placeholder="Kategorie"
                                     value={category.categories}
-                                    onChange={(e) => handleCategoryChange(category.id, 'categories', e.target.value)}
+                                    onChange={(event) => handleCategoryChange(category.id, 'categories', event.target.value)}
                                 />
                                 <img
                                     src="/icons8-löschen-24.png"
@@ -256,7 +261,7 @@ export default function AddRecipe(props: AddRecipeProps) {
                                             handleDeleteCategory(index);
                                         }
                                     }}
-                                    style={{ cursor: "pointer", width: "20px", height: "20px" }}
+                                    style={{ cursor: "pointer", width: "1em", height: "1em" }}
                                     tabIndex={0}
                                 />
                             </div>
@@ -265,30 +270,29 @@ export default function AddRecipe(props: AddRecipeProps) {
                             Kategorie
                         </button>
                     </div>
-
-                    <h3>
                         <input
                             type="number"
                             step="5"
                             placeholder="Kochzeit"
                             value={newRecipe.cookingtime}
-                            onChange={(e) => handleRecipeChange('cookingtime', e.target.value)}
+                            onChange={(event) => handleRecipeChange('cookingtime', event.target.value)}
+                            style={{ cursor: "pointer", width: "4em", height: "1.2em" }}
                         />
                         <label>Kochzeit</label>
                         <input
                             type="text"
-                            placeholder="Author"
+                            placeholder="Dein Name"
                             value={newRecipe.author}
-                            onChange={(e) => handleRecipeChange('author', e.target.value)}
+                            onChange={(event) => handleRecipeChange('author', event.target.value)}
+                            style={{ cursor: "pointer", width: "60em", height: "1.2em", marginTop:"0.5em", paddingTop: "0.5" }}
                         />
                         <input
                             type="text"
-                            placeholder="Bilder"
+                            placeholder="Wenn Du Bilder eintragen möchtest, kannst Du hier gern die 'url' eintragen..."
                             value={newRecipe.url}
-                            onChange={(e) => handleRecipeChange('url', e.target.value)}
+                            onChange={(event) => handleRecipeChange('url', event.target.value)}
+                            style={{ cursor: "pointer", width: "60em", height: "1.2em", marginTop:"0.5em", paddingBottom: "0.5" }}
                         />
-                    </h3>
-
                     <button type="button" onClick={saveRecipe}>
                         Rezept speichern
                     </button>
