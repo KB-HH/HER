@@ -1,6 +1,7 @@
 .recipe-gallery {
     display: grid;
     background-color: #ffffff;
+    text-decoration: none;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     grid-template-rows: auto auto;
     gap: 20px;
@@ -19,6 +20,9 @@
     margin: 0 auto;
     padding: 20px;
 }
+.no-underline {
+    text-decoration: none;
+}
 
 .recipe-card {
     background-color: #c7c6c6;
@@ -36,7 +40,7 @@
 }
 .recipe-title {
     font-family: "Courier New", serif;
-    text-decoration: none;
+    text-decoration-line: none;
     color: rgb(66, 65, 65);
     font-size: 1em;
     font-weight: bolder;
@@ -46,13 +50,14 @@
 textarea {
     width: 100%;
     height: auto;
+    margin-left: 5em;
     min-height: 5em;
     min-width: 5em;
-    margin-left: 5em;
     padding: 1em;
     font-size: 1em;
     border-style: none;
     font-family: "Courier New", serif;
+    font-weight: bold;
 }
 
 
@@ -71,6 +76,7 @@ textarea {
     display: flex;
     align-items: flex-start;
     flex-direction: row;
+    border-radius: 10%;
 }
 
 .recipe-details {
@@ -88,16 +94,18 @@ input[type="text"] {
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
-    font-family: Arial, sans-serif;
+    font-family: "Courier New", sans-serif;
+    font-weight: bold;
 }
 
 button {
     background-color: #007BFF;
     color: #fff;
     border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
+    border-radius: 0.5em;
+    margin-bottom: 0.5em;
+    padding: 0.7em 0.7em;
+    font-size: 1em;
     cursor: pointer;
     transition: background-color 0.3s;
 }
@@ -127,4 +135,5 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
 

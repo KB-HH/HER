@@ -35,9 +35,8 @@ export default function RecipeGallery(props: RecipeGalleryProps) {
             <Link to="/recipes/add">
                 <img src="/icons8-cooking-pot-96.png" alt="Add Recipe" title="Rezept hinzufügen" />
             </Link>
-
             <div className="recipe-gallery">
-                <div className="recipe-list">
+                <div className="recipe-title">
                     <input
                         type="text"
                         placeholder="Suche nach Zutaten (durch Kommas getrennt)"
